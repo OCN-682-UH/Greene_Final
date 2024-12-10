@@ -4,7 +4,7 @@ output:
     theme: style-serif
 ---
 
-::: {style="text-align: center; font-size: 40px; font-weight: bold"}
+::: {style="text-align: center; font-size: 30px; font-weight: bold; margin-top: 20px; margin-bottom: 20px"}
 Population Variation in Chlorophyll Content of ʻAʻaliʻi
 :::
 
@@ -35,8 +35,11 @@ library(viridis)
 functional <- read_csv(here("Final_Project", "Data", "functional.phase.data.csv"))
 site <- read_csv(here("Final_Project", "Data", "site.csv"))
 ```
+::: {style="text-align: justify; font-size: 10px; font-weight: bold; margin-top: 20px; margin-bottom: 20px"}
+9 populations capturing a 450 mm - 1325 mm MAR precipitation gradient
+:::
 
-```{r}
+```{r, fig.width= 10, fig.height= 3, fig.align='center'}
 # Map of population source sites
 
 # title on map  
@@ -101,7 +104,7 @@ map
 ```
 
 
-```{r}
+```{r, fig.width= 10, fig.height= 3, fig.align='center'}
 
 # Summary stats  
 # group control and treatment
@@ -117,10 +120,15 @@ mean_functional <- functional %>%
 write.csv(mean_functional, here("Final_Project", "Data", "mean_functional.csv"))
 
 ```
-```{r}
+```{r, fig.width= 10, fig.height= 3, fig.align='center'}
 
 # box plot  
 
+# Ungroup the data for plot over time
+mean_functional_filled <- mean_functional %>%
+    ungroup()
+
+# boxplots!
 mean_functional_filled %>%
   ggplot(aes(
     x= Chlorophyll, 
@@ -152,13 +160,8 @@ mean_functional_filled %>%
 
 ```
 
-```{r}
+```{r, fig.width= 10, fig.height= 3, fig.align='center'}
 # animating a scatter plot
-# Ungroup the data
-
-mean_functional_filled <- mean_functional %>%
-    ungroup()
-
 # Chlorophyll content over time
 animated_chlplot <- mean_functional_filled  %>% # datasheet
   ggplot(aes(x = Week, # x-axis
@@ -183,7 +186,7 @@ animated_chlplot <- mean_functional_filled  %>% # datasheet
   labs(title = "Main Effect of Drought on Chlorphyll Content of ʻAʻaliʻi at Week: {round(frame_along)}") # Display the current Week in the title
 
 # Animate the plot
-animate(animated_chlplot, nframes = 50, fps = 5)
+animate(animated_chlplot, nframes = 50, fps = 10)
 
 
 
