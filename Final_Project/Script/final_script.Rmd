@@ -23,271 +23,82 @@ library(dplyr)
 library(tidytext)
 library(here)
 library(gganimate)
-
-# models (stats)
-library(lmerTest)
-library (RLRsim)
-library(Matrix)
-# library(lme4)
-library(lattice)
-library(car)
-library(nlme)
+library(kableExtra)
+library(ggmap)
 ```
 
 # Data  
 
 ```{r}
-
 # Data uploading
-functional.phase.data <- read_csv(here("Final_Project", "Data", "functional.phase.data.csv"))
-glimpse(functional.phase.data)
-view(functional.phase.data)
+functional <- read_csv(here("Final_Project", "Data", "functional.phase.data.csv"))
+fitness <- read_csv(here("Final_Project", "Data", "fitness.csv"))
+survival <- read_csv(here("Final_Project", "Data", "survivalrate.csv"))
+growth <- read_csv(here("Final_Project", "Data", "nr_growth.csv"))
+groupdata <- read_csv(here("Final_Project", "Data", "group_means.csv"))
+site <- read_csv(here("Final_Project", "Data", "site.csv"))
 ```
 
-# Statistic Modeling: Chlorophyll Content Data  
-
-- PT.I: Primary interaction treatment  
-- PT.II: Reduced models  
-- PT.III: Comparison models  
-
-## PT.I: Full Model 
-- main interaction  
-- includes all main factors and interactions  
-- F-statistic for a fixed effects mixed model  
-- results table: drought column   
+# Data clean  
 
 ```{r}
 
-# drought column result: (F-stat) 3.9797, (p-val) 0.07637
+# Summary stats  
 
-chl.full.A = lmer(Chlorophyll ~ Treatment + 
-                    (1|ID) + 
-                    (1|Population) + 
-                    (1|Week) + 
-                    (1|Population:Treatment) +  
-                    (1|Treatment:Week), 
-                  data = functional.phase.data, 
-                  na.action = na.omit)
+# output 1: animated chlorphyll plot  
+  # group control and treatment
+  # group by phase
+  # summarise mean
 
-Anova(chl.full.A, test.statistic="F", type=3)
-```
-
-
-```{r}
-
-# Normality check: untransformed data  
-# Checking normality of residuals in untransformed data
-# W = 0.98162, p-value = 1.319e-10
-
-shapiro.test(resid(chl.full.A)) 
-```
-
-
-```{r}
-
-# untransformed data: QQPlot  
-qqnorm(resid(chl.full.A))
-```
-
-
-```{r}
-
-# log-transformed data
-# this will be used in the next steps when we look at it as log-transformed data.
-log.chl <- log(functional.phase.data$Chlorophyll)
-glimpse(log.chl)
-```
-
-
-```{r}
-
-# drought column result: (F-stat) 0.5701, (p-val) 0.4732
-
-chl.full.B = lmer(log.chl ~ Treatment + 
-                    (1|ID) + 
-                    (1|Population) + 
-                    (1|Week) + 
-                    (1|Population:Treatment) +  
-                    (1|Treatment:Week), 
-                  data = functional.phase.data, 
-                  na.action = na.omit)
-
-Anova(chl.full.B, test.statistic="F", type=3)
-```
-
-
-```{r}
-
-# transformed data: QQPlot 
-qqnorm(resid(chl.full.B))
-```
-
-
-## Reduced Models  
-
-- work bottom to top approach  
-- drop the interaction  
-- keep main factors  
-- always keep “Treatment” and “(1|ID)” in all models  
-- our goal is to find out if any of these factors improve model fit →   
-- does it account for more of the variance in our response trait?  
-- if it doesn’t, the chi square value will NOT be significant.  
-- the factor we drop from the reduced model is the factor of focus. We want to know if adding this factor accounts for MORE variance than the treatment alone. A.K.A. we are investigating the effect of the factor we drop.  
-
-```{r}
-
-# 1: (Population:Treatment): chisq 6.5799
-
-chl.red.1 = lmer(Chlorophyll ~ Treatment + 
-                   (1|ID) + 
-                   (1|Population) + 
-                   (1|Week) + 
-                   (1|Population:Treatment), 
-                 data = functional.phase.data, 
-                 na.action = na.omit)
-Anova(chl.red.1)
-```
-
-
-```{r}
-
-# 2: (Treatment:Time): chisq 4.1081
-
-chl.red.2 = lmer(Chlorophyll ~ Treatment + 
-                   (1|ID) + 
-                   (1|Population) + 
-                   (1|Week) + 
-                   (1|Treatment:Week), 
-                 data = functional.phase.data,  
-                 na.action = na.omit)
-Anova(chl.red.2)
-```
-
-
-```{r}
-
-# 3: no interactions: chisq 6.58
-
-chl.red.3 = lmer(Chlorophyll ~ Treatment + 
-                     (1|ID) + 
-                     (1|Population) + 
-                     (1|Week), 
-                   data = functional.phase.data, 
-                   na.action = na.omit)
-Anova(chl.red.3)
-```
-
-
-```{r}
-
-# 4: effect of week: chisq 6.0626
-
-chl.red.4 = lmer(Chlorophyll ~ Treatment + 
-                     (1|ID) + 
-                     (1|Population), 
-                   data = functional.phase.data, 
-                   na.action = na.omit)
-Anova(chl.red.4)
-```
-
-
-```{r}
-
-# 5: effect of population: chisq 5.4025
-
-chl.red.5 = lmer(Chlorophyll ~ Treatment + 
-                         (1|ID) + 
-                         (1|Week), 
-                       data = functional.phase.data, 
-                       na.action = na.omit)
-Anova(chl.red.5)
-```
-
-
-## Comparison Models  
-- the question: does adding the interaction/factors improve the model fit?
-- comp.model.1 = anova(full.model, red.model.1) # test treatment x time interaction  
-- comp.model.2 = anova(full.model, red.model.2) # test treatment x population interaction  
-- comp.model.3 = anova(red.model.3, red.model.4) # test effect of week  
-- comp.model.4= anova(red.model.3, red.model.5) # test effect of population   
-
-```{r}
-
-# 1: Test (treatment:time) interaction: chisq 2.8486
-anova(chl.full.A, chl.red.1)
-```
-
-
-```{r}
-
-# 2A: Test (treatment:population) interaction: chisq 0
-anova(chl.full.A, chl.red.2)
-```
-
-```{r}
-# 2B: Test (treatment:population) interaction: chisq 2.8486
-anova(chl.red.1, chl.red.2)
-```
-
-
-```{r}
-
-# 3: Test the effect of week: chisq 1.226
-anova(chl.red.3, chl.red.4)
-```
-
-
-```{r}
-
-# 4: Test the effect of population: chisq 26.032
-anova(chl.red.3, chl.red.5)
-```
-
-# Plot  
-
-```{r}
-# Data uploading
-functional.phase.data <- read_csv(here("Final_Project", "Data", "functional.phase.data.csv"))
-glimpse(functional.phase.data)
-```
-
-
-```{r}
-
-# group control and treatment
-# group by phase
-# summarise mean
-
-glimpse(functional.phase.data)
-
-mean_data <- functional.phase.data %>% 
-  select(Week, Population, Treatment, Chlorophyll, Conductance, ETRmax, Phase) %>% 
+mean_functional <- functional %>% 
+  select(Week, Population, Treatment, Chlorophyll, Phase) %>% 
   group_by(Week, Population, Treatment, Phase) %>% 
-  summarize(mean_chl = mean(Chlorophyll, na.rm = TRUE), 
-            mean_cond = mean(Conductance, na.rm = TRUE), 
-            mean_etrm = mean(ETRmax, na.rm = TRUE))
-
-glimpse(mean_data)
+  summarize(Chlorophyll = mean(Chlorophyll, na.rm = TRUE))
 
 # save csv file to data folder
-write.csv(mean_data, here("Final_Project", "Data", "mean_data.csv"))
+write.csv(mean_functional, here("Final_Project", "Data", "mean_functional.csv"))
+
 ```
 
 
-```{r}
-# Chlorophyll content over time
+# Table - Mean trait data 
 
-chlplot <- mean_data %>% # datasheet
+```{r}
+
+mean_functional %>% kbl()
+
+
+```
+
+#  
+
+```{r}
+
+
+```
+
+
+# Animated plot  
+
+```{r}
+# animating a plot
+
+# Ungroup the data
+mean_functional_filled <- mean_functional %>%
+    ungroup()
+
+# Chlorophyll content over time
+animated_chlplot <- mean_functional_filled  %>% # datasheet
   ggplot(aes(x = Week, # x-axis
-             y = mean_chl, # y-axis
-             color = Treatment)) + # colors
-  geom_point() +  # data points
-  geom_line() +  # plot
-  labs(subtitle = "Detecting trait plasticity of chlorophyll content in response to drought stress", # plot subtitle
+             y = Chlorophyll, # y-axis
+             color = Treatment,
+             group = Treatment)) + # colors
+  geom_point(aes(group = seq_along(Week))) +
+  geom_line() +
+  labs(subtitle = "Population variation in chlorophyll content of ʻaʻaliʻi in response to drought stress over time", # plot subtitle
        caption = "Data sourced from: Greene 2023", # plot caption
        x = "Time (Weeks)", # x-axis label
        y = "Mean Chlorophyll Content") + # y-axis label
-  ggtitle("Effects of Drought on Leaf Chlorophyll Content in 'A'ali'i") + # plot title
   facet_wrap(~Population) + # create panels for each population!
   scale_color_manual(breaks= c("C", "PD"), labels = c("Control Group", "Pulse Drought Group"), values = c("darkgreen", "brown")) + # rename legend variables
   theme(plot.title = element_text(face = "bold", color = "black", hjust = 0.5), # bold title
@@ -295,61 +106,13 @@ chlplot <- mean_data %>% # datasheet
         axis.text.y = element_text(size = 8), axis.title.y = element_text(size = 10),   # adjust y-axis labels
         legend.position = "top", 
         plot.subtitle = element_text(size = 10, hjust = 0.5), 
-        legend.title = element_blank())
+        legend.title = element_blank())+
+  transition_reveal(along = Week)+
+  labs(title = "Main Effect of Drought on Chlorphyll Content of ʻAʻaliʻi at Week: {round(frame_along)}") # Display the current Week in the title
 
-  # transition_states(Week)
-
-# save plot to my output folder
-ggsave(here("Final_Project", "Output", "chlplot.png")) 
-
-# view plot
-chlplot
-```
-
-```{r}
-# group by phases
-
-phase_data <- functional.phase.data %>% 
-  select(Week, Population, Treatment, Chlorophyll, Conductance, ETRmax, Phase) %>% 
-  group_by(Population, Treatment, Phase) %>% 
-  summarize(mean_chl = mean(Chlorophyll, na.rm = TRUE), 
-            mean_cond = mean(Conductance, na.rm = TRUE), 
-            mean_etrm = mean(ETRmax, na.rm = TRUE))
-
-glimpse(phase_data)
-```
-
-
-```{r}
-
-# plot recovery phases
-
-chlphase_plot <- phase_data %>% # datasheet
-  ggplot(aes(x = Phase, # x-axis
-             y = mean_chl, # y-axis
-             color = Treatment)) + # colors
-  geom_point() +  # data points # plot
-  geom_line(aes(group = Treatment)) +
-  labs(subtitle = "Investigating the priming effects of drought treatment on rates of chlorophyll content throughout recovery phases", # plot subtitle
-       caption = "Data sourced from: Greene 2023", # plot caption
-       x = "Recovery Phase", # x-axis label
-       y = "Mean Chlorophyll Content") + # y-axis label
-  ggtitle("Drought Priming Effect on Leaf Chlorophyll Content in 'A'ali'i") + # plot title
-  facet_wrap(~Population) + # create panels for each population!
-  scale_color_manual(breaks= c("C", "PD"), labels = c("Control Group", "Pulse Drought Group"), values = c("darkgreen", "brown")) + # rename legend variables
-  scale_x_discrete(labels = c('Treatment', 'Pre', 'Mid', 'Post')) +
-theme(plot.title = element_text(face = "bold", color = "black", hjust = 0.5), # bold title
-        axis.text.x = element_text(size = 8), axis.title.x = element_text(size = 10), # adjust x-axis labels
-        axis.text.y = element_text(size = 8), axis.title.y = element_text(size = 10),   # adjust y-axis labels
-        legend.position = "top", 
-        plot.subtitle = element_text(size = 10, hjust = 0.5), 
-        legend.title = element_blank())
-
-# save plot to my output folder
-ggsave(here("Final_Project", "Output", "chlphase_plot.png")) 
-
-# view plot
-chlphase_plot
+# Animate the plot
+animate(animated_chlplot, nframes = 100, fps = 10)
 
 ```
+
 
