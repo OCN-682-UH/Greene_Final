@@ -1,0 +1,32 @@
+---
+output: 
+  cleanrmd::html_document_clean:
+    theme: no-class
+    
+---
+
+::: {style="text-align: center; font-size: 40px; font-weight: bold"}
+Population Variation in Chlorophyll Content of ʻAʻaliʻi
+:::
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, 
+                      message = FALSE, 
+                      warning = FALSE, 
+                      fig.path = "../Output/")
+```
+
+# Libraries  
+
+```{r}
+
+# visuals
+library(tidyverse)
+library(dplyr)
+library(tidytext)
+library(here)
+library(gganimate)
+library(kableExtra)
+library(leaflet)
+library(cleanrmd)
+```
