@@ -8,6 +8,12 @@ output:
 Population Variation in Chlorophyll Content of ʻAʻaliʻi
 :::
 
+::: {style="text-align: center; font-size: 25px; margin-top: 20px; margin-bottom: 20px"}
+Created by: Kauanoe Greene  
+2024-12-09  
+OCN-682  
+:::
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, 
                       message = FALSE, 
@@ -35,11 +41,11 @@ library(viridis)
 functional <- read_csv(here("Final_Project", "Data", "functional.phase.data.csv"))
 site <- read_csv(here("Final_Project", "Data", "site.csv"))
 ```
-::: {style="text-align: justify; font-size: 10px; font-weight: bold; margin-top: 20px; margin-bottom: 20px"}
-9 populations capturing a 450 mm - 1325 mm MAR precipitation gradient
+::: {style="text-align: center; font-size: 25px; margin-top: 20px; margin-bottom: 20px"}
+9 populations capture a 450 mm - 1325 mm MAR precipitation gradient
 :::
 
-```{r, fig.width= 10, fig.height= 3, fig.align='center'}
+```{r map, fig.align='center'}
 # Map of population source sites
 
 # title on map  
@@ -67,35 +73,35 @@ map <- leaflet(data = site) %>%
   addMarkers(
     lng = -158.2092,
     lat = 21.57249, 
-    popup = "Kealia") %>% 
+    popup = "Kealia (921.1 mm)") %>% 
   addMarkers(
     lng = -158.2219,
     lat = 21.51970, 
-    popup = "Lower ʻŌhikilolo") %>% 
+    popup = "Lower ʻŌhikilolo (889 mm)") %>% 
   addMarkers(
     lng = -158.21953,
     lat = 21.4978, 
-    popup = "Keaʻau Hibiscus") %>% 
+    popup = "Keaʻau Hibiscus (848.6 mm)") %>% 
   addMarkers(
     lng = -158.1939,
     lat = 21.54240, 
-    popup = "Kahanahāʻiki") %>% 
+    popup = "Kahanahāʻiki (1322.3 mm)") %>% 
   addMarkers(
     lng = -158.0918,
     lat = 21.44530, 
-    popup = "ʻĒkahanui") %>% 
+    popup = "ʻĒkahanui (756.7 mm)") %>% 
   addMarkers(
     lng = -158.0918,
     lat = 21.44530, 
-    popup = "Makaha I") %>% 
+    popup = "Makaha I (1206.3 mm)") %>% 
   addMarkers(
     lng = -157.6810,
     lat = 21.28800, 
-    popup = "Koko Head") %>% 
+    popup = "Koko Head (746.5 mm)") %>% 
   addMarkers(
     lng = -155.5971,
     lat = 19.77820, 
-    popup = "Saddle Road") %>% 
+    popup = "Saddle Road (451.2 mm)") %>% 
   addControl(html = title, 
              position = "topleft", 
              className = "maplegend")
@@ -104,7 +110,7 @@ map
 ```
 
 
-```{r, fig.width= 10, fig.height= 3, fig.align='center'}
+```{r, fig.align='center'}
 
 # Summary stats  
 # group control and treatment
@@ -120,7 +126,11 @@ mean_functional <- functional %>%
 write.csv(mean_functional, here("Final_Project", "Data", "mean_functional.csv"))
 
 ```
-```{r, fig.width= 10, fig.height= 3, fig.align='center'}
+::: {style="text-align: center; font-size: 25px; margin-top: 20px; margin-bottom: 20px"}
+Comparing global mean chlorophyll content of drought and control groups  
+:::
+
+```{r boxplot, fig.align='center'}
 
 # box plot  
 
@@ -139,7 +149,7 @@ mean_functional_filled %>%
   geom_jitter(alpha = 0.5) +
     theme(
       legend.position="none",
-      plot.title = element_text(size=12, hjust = 0.5, face = "bold"), 
+      plot.title = element_text(size=12, hjust = 0.5), 
       axis.title.x = element_text(size=10, hjust = 0.5),
       axis.title.y = element_text(size=10, hjust = 0.5),
       axis.text.x = element_text(size = 8), 
@@ -160,7 +170,11 @@ mean_functional_filled %>%
 
 ```
 
-```{r, fig.width= 10, fig.height= 3, fig.align='center'}
+::: {style="text-align: center; font-size: 25px; margin-top: 20px; margin-bottom: 20px"}
+Mechanistic insight on population variability in chlorophyll content over time
+:::
+
+```{r scatterplot, fig.align='center'}
 # animating a scatter plot
 # Chlorophyll content over time
 animated_chlplot <- mean_functional_filled  %>% # datasheet
@@ -187,8 +201,5 @@ animated_chlplot <- mean_functional_filled  %>% # datasheet
 
 # Animate the plot
 animate(animated_chlplot, nframes = 50, fps = 10)
-
-
-
 ```
 
