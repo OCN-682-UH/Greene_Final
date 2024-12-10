@@ -25,6 +25,7 @@ library(here)
 library(gganimate)
 library(kableExtra)
 library(ggmap)
+library(leaflet)
 ```
 
 # Data  
@@ -37,6 +38,11 @@ survival <- read_csv(here("Final_Project", "Data", "survivalrate.csv"))
 growth <- read_csv(here("Final_Project", "Data", "nr_growth.csv"))
 groupdata <- read_csv(here("Final_Project", "Data", "group_means.csv"))
 site <- read_csv(here("Final_Project", "Data", "site.csv"))
+```
+# Map of sites
+
+```{r}
+
 ```
 
 # Data clean  
