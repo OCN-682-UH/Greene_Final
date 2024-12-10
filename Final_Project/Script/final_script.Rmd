@@ -26,8 +26,8 @@ knitr::opts_chunk$set(echo = FALSE,
 # Libraries  
 library(tidyverse)
 library(dplyr)
-library(tidytext)
-library(here)
+library(tidytext) # clean data
+library(here) # saving data
 library(gganimate) # animation
 library(leaflet) # map
 library(cleanrmd) # html style
@@ -38,7 +38,7 @@ library(knitr) # images
 
 ```{r}
 # Data uploading
-functional <- read_csv(here("Final_Project", "Data", "functional.phase.data.csv")) # dataset
+functional <- read_csv(here("Final_Project", "Data", "functional.phase.data.csv")) # primary dataset
 site <- read_csv(here("Final_Project", "Data", "site.csv")) # sites
 ```
 
@@ -79,8 +79,10 @@ Oʻahu, served as our primary model system (with an additional population source
 :::
 
 ```{r map, fig.align='center'}
-# Map of population source sites
 
+# Map of population source sites  
+# coding below is formatted for the html document  
+# allows me to modify title/texts more flexibly  
 # title on map
 # position of title
 # style of title  
@@ -112,7 +114,7 @@ map <- leaflet(data = site) %>% # dataset
     lng = -158.2092, # longitude  
     lat = 21.57249, # latitude  
     popup = "Kealia (921.1 mm)") %>% # label name popup  
-  addMarkers( # repeat for all sites  
+  addMarkers( # repeat for all sites listed below   
     lng = -158.2219,
     lat = 21.51970, 
     popup = "Lower ʻŌhikilolo (889 mm)") %>% 
@@ -167,9 +169,9 @@ knitr::include_graphics('C:/Users/18088/OneDrive/Desktop/greenhouse.jpeg') # ins
 # summarise mean
 
 mean_functional <- functional %>% # dataset  
-  select(Week, Population, Treatment, Chlorophyll) %>% # choose focal parameters  
+  select(Week, Population, Treatment, Chlorophyll) %>% # choose "select" focal parameters  
   group_by(Week, Population, Treatment) %>% # group by for summary stats  
-  summarize(Chlorophyll = mean(Chlorophyll, na.rm = TRUE)) # calculate mean chl  
+  summarize(Chlorophyll = mean(Chlorophyll, na.rm = TRUE)) # calculate mean chlorophyll  
 ```
 
 ::: {style="text-align: center; font-size: 20px; font-weight: bold; margin-top: 50px; margin-bottom: 50px"}
@@ -195,10 +197,12 @@ Chlorophyll data was collected from both treatment and control groups. We predic
 ```{r boxplot, fig.align='center'}
 
 # box plot  
+# capture variation in mean conductance across treatment and control groups  
+# compare on one plot to better highlight the variability across populations  
 
 # Ungroup the data for plot over time
 mean_functional_filled <- mean_functional %>% # dataset
-    ungroup()
+    ungroup() # ungroup function  
 
 # boxplots!
 mean_functional_filled %>% # dataset
@@ -228,7 +232,7 @@ mean_functional_filled %>% # dataset
     "Keaau" = "Keaʻau Hibiscus", 
     "Kahanahaiki" = "Kahanahāʻiki", 
     "Ekahanui" = "ʻĒkahanui")) + 
-  facet_wrap(~Treatment) # plot treatment groups seperately  
+  facet_wrap(~Treatment) # plot treatment groups separately  
 
 ```
 
@@ -241,8 +245,15 @@ We monitored chlorophyll content on a weekly basis, allowing us to track changes
 :::
 
 ```{r scatterplot, fig.align='right'}
-# animating a scatter plot
-# Chlorophyll content over time
+
+# animated scatter plot  
+# plotted chlorophyll content over time  
+# time in weeks  
+# track changes in data in changing conditions  
+# monitored responses on a weekly basis  
+# plotting data over time helps us detect plasticity  
+
+
 animated_chlplot <- mean_functional_filled  %>% # datasheet
   ggplot(aes(x = Week, # x-axis
              y = Chlorophyll, # y-axis
