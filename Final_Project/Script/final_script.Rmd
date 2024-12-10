@@ -2,7 +2,7 @@
 title: "Final Project"
 author: "Kauanoe Greene"
 date: "2024-12-04"
-output: github_document
+output: html_document
 ---
 
 
@@ -33,10 +33,6 @@ library(leaflet)
 ```{r}
 # Data uploading
 functional <- read_csv(here("Final_Project", "Data", "functional.phase.data.csv"))
-fitness <- read_csv(here("Final_Project", "Data", "fitness.csv"))
-survival <- read_csv(here("Final_Project", "Data", "survivalrate.csv"))
-growth <- read_csv(here("Final_Project", "Data", "nr_growth.csv"))
-groupdata <- read_csv(here("Final_Project", "Data", "group_means.csv"))
 site <- read_csv(here("Final_Project", "Data", "site.csv"))
 ```
 # Map of sites
@@ -57,32 +53,14 @@ site <- read_csv(here("Final_Project", "Data", "site.csv"))
   # summarise mean
 
 mean_functional <- functional %>% 
-  select(Week, Population, Treatment, Chlorophyll, Phase) %>% 
-  group_by(Week, Population, Treatment, Phase) %>% 
+  select(Week, Population, Treatment, Chlorophyll) %>% 
+  group_by(Week, Population, Treatment) %>% 
   summarize(Chlorophyll = mean(Chlorophyll, na.rm = TRUE))
 
 # save csv file to data folder
 write.csv(mean_functional, here("Final_Project", "Data", "mean_functional.csv"))
 
 ```
-
-
-# Table - Mean trait data 
-
-```{r}
-
-mean_functional %>% kbl()
-
-
-```
-
-#  
-
-```{r}
-
-
-```
-
 
 # Animated plot  
 
