@@ -1,0 +1,18 @@
+Column headings,Description
+Week,The week of data collection. Data from each population is collected once per week. Data is collected on the same day each week.
+Population,The location of where seeds were sourced from. Populations primarily sourced from Oʻahu with an additional population from Saddle Road on Hawaiʻi Island. All seeds in stock were sourced from th Army Natural Resources Program of Oʻahu.
+ID,"The seedling experimental idetification number. My initial ""K"" followed by the replicate number and population key (A, B, C, D, E, F, G, H, and I). Example: K10B."
+Treatment,"PD: Pulse-drought treatment group. PD replicates did not recieve water until the 2-week long recovery watering period. During the recovery period, PD replicates were watered in the same manner as the control group until 100% FC soil saturation."
+,"C: Control group. Control replicates were watered consistently to 100% FC soil saturation. Populations A, B, and C were watered every other day (Monday, Wednesday, Friday, and Sunday). Populations D, E, F, G, H, and I were watered each day, as it was super hot during the summer."
+Conductance,Leaf stomatal conductance measures collected via Leaf Porometer
+Chlorophyll,Chlorophyll content collected via SPAD meter
+Alpha,Alpha is the slope of the ETR curve. Photosynthetic trait data collected via Waltz Junior PAM fluorometer. 
+ETRmax,Maximum electron transport rate. The value is a unit of movement rate. The point along the y-axis at which electron trasport rate peaks right before photoinhibition. The maximum potential for light reactions. Photosynthetic trait data collected via Waltz Junior PAM fluorometer. 
+Ek,The PAR value along the x-axis at which electron transport rate maxes out. The highest possible light rate value at which electron transport rate maxes out. Photosynthetic trait data collected via Waltz Junior PAM fluorometer. 
+NPQmax,"Maximum non-photochemical quenching value. A measure of the dissapation of heat from the reaction in the reaction centers. A measure of that loss of energy as heat. Used as a metric of stress because it shows that the light reaction centers are quenched. When the NPQ value is high, it shows us that the light reaction centers are quenched at lower levels of light meaning more vulrable to light stress. Likely to see higher rates in stressed plants. Photosynthetic trait data collected via Waltz Junior PAM fluorometer. "
+Fv/Fm,"Quatum yield (also seen as Y0). The maximum proportion of that the plant can use in photochemistry. Ideal yield is around 80% , because not all the light is processed. Some is lost as heat (NPQ). Likely to see higher rates in control plants. Photosynthetic trait data collected via Waltz Junior PAM fluorometer. "
+Phase,"Experimental phase including treatment and the 2-week watering recovery phase, following the pulse drought treatment."
+,Treatment: Pulse drought treatment phase of the experiment. Seedings transition into the Recovery Phase once 50% of replicates meet the severely wilted stage.
+,Pre-Recovery: The phase marking the start of Week 1 of the 2-week recovery period.
+,Mid-Recovery: The phase marking the midway point of the 2-week recovery period. Thsis is one week into the recovery period.
+,Post-Recovery: The phase marking the end of the 2-week recovery period. This is the day that the harvest fate replicates are harvested for further analyses and terminal drought fate replicates are randomly placed on benches and transition into the terminal phase.
