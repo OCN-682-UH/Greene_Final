@@ -1,0 +1,238 @@
+---
+title: '**Population Variation in Chlorophyll Content of ʻAʻaliʻi**'
+author: "Kauanoe Greene"
+date: "2024-12-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, 
+                      message = FALSE, 
+                      warning = FALSE, 
+                      fig.path = "../Output/")
+```
+
+```{r}
+# Libraries  
+library(tidyverse)
+library(dplyr)
+library(tidytext)
+library(here)
+library(gganimate)
+library(leaflet)
+library(cleanrmd)
+library(gapminder)
+library(hrbrthemes)
+library(viridis)
+library(knitr)
+```
+
+# **Background**
+
+Here in Hawaiʻi, island biodiversity is high due to high rates of endemicity.  
+
+Diversity occurs both at and within the species scale. We’ll be focusing on the within species scale across populations throughout this project.  
+
+Climate is highly variable in Hawaiʻi and climate heterogeneity occurs across short distances, leading to steep environmental gradients that are predicted to drive high intraspecific variability within plants, particularly those that are widespread like ‘aʻaliʻi. 
+
+```{r}
+# Data uploading
+functional <- read_csv(here("Final_Project", "Data", "functional.phase.data.csv"))
+site <- read_csv(here("Final_Project", "Data", "site.csv"))
+```
+```{r}
+knitr::include_graphics('C:/Users/18088/OneDrive/Desktop/aalii/ʻAʻaliʻi_07132024/DSC02652.jpg')
+```
+
+Restoration of plants under climate change may benefit from population-specific information about climate stress tolerance by helping us identify populations at most risk of decline, as well as populations with high tolerance that can be used in out-plantings.  
+
+To maximize the conservation of intraspecific diversity, we don’t want to lose the vulnerable populations and should prioritize commonly used species in restoration to inform future actions.  
+
+
+```{r}
+knitr::include_graphics('C:/Users/18088/OneDrive/Desktop/aaliigrid.jpeg')
+```
+
+
+# **Study Site**
+
+Oʻahu, served as our primary model system (with an additional population sourced from Saddle Road on Hawaiʻi Island).  
+
+We had 9 populations sourced from a variety of sites that captured a 450-1325mm mean annual rainfall precipitation gradient.  
+
+
+```{r map}
+# Map of population source sites
+
+# title on map  
+title <- "
+<style> 
+.maplegend {
+position: absolute; 
+top: 30px; 
+left: 1000%; 
+transform: translatex(-10%);
+font-weight: bold; 
+font-size: 22px; 
+text-align: center;
+color: #F2F3F2; 
+width: 250px;
+}
+</style> 
+<div> 
+Population Source Sites of ʻAʻaliʻi 
+</div>"
+
+map <- leaflet(data = site) %>% 
+  addTiles() %>% 
+  addProviderTiles("Esri.WorldImagery") %>% 
+  addMarkers(
+    lng = -158.2092,
+    lat = 21.57249, 
+    popup = "Kealia (921.1 mm)") %>% 
+  addMarkers(
+    lng = -158.2219,
+    lat = 21.51970, 
+    popup = "Lower ʻŌhikilolo (889 mm)") %>% 
+  addMarkers(
+    lng = -158.21953,
+    lat = 21.4978, 
+    popup = "Keaʻau Hibiscus (848.6 mm)") %>% 
+  addMarkers(
+    lng = -158.1939,
+    lat = 21.54240, 
+    popup = "Kahanahāʻiki (1322.3 mm)") %>% 
+  addMarkers(
+    lng = -158.0918,
+    lat = 21.44530, 
+    popup = "ʻĒkahanui (756.7 mm)") %>% 
+  addMarkers(
+    lng = -158.0918,
+    lat = 21.44530, 
+    popup = "Makaha I (1206.3 mm)") %>% 
+  addMarkers(
+    lng = -157.6810,
+    lat = 21.28800, 
+    popup = "Koko Head (746.5 mm)") %>% 
+  addMarkers(
+    lng = -155.5971,
+    lat = 19.77820, 
+    popup = "Saddle Road (451.2 mm)") %>% 
+  addControl(html = title, 
+             position = "topleft", 
+             className = "maplegend")
+```
+
+
+# **Greenhouse Experiment**  
+
+Our research focused on plants at the seedling stage because seedlings are particularly vulnerable to climate change, yet key in population stability.  
+
+
+We used experimental approaches to test ʻaʻaliʻi seedling drought tolerance to better understand ...
+
+1: if populations vary in seedling drought tolerance  
+
+2: if functional traits and their plasticity correlate with performance under stress, revealing mechanisms of intraspecific variation in tolerance  
+
+3: if intraspecific variation in tolerance can enhance restoration in Hawaiʻi  
+
+
+```{r}
+knitr::include_graphics('C:/Users/18088/OneDrive/Desktop/greenhouse.jpeg')
+```
+
+# **Trait-Based Approach**  
+
+For insights into the mechanisms that may underlie population variation in seedling drought tolerance, we measured a suite of anatomical, morphological, and physiological traits. We measured chlorophyll content to better understand the main effect of drought on seedling performance.  
+
+
+```{r}
+knitr::include_graphics('C:/Users/18088/OneDrive/Desktop/traits.jpeg')
+```
+
+
+# **Intraspecific Variation in Seedling Responses**  
+
+We collected chlorophyll content data across each population. 
+
+
+```{r box}
+# Summary stats  
+# group control and treatment
+# group by phase
+# summarise mean
+
+mean_functional <- functional %>% 
+  select(Week, Population, Treatment, Chlorophyll) %>% 
+  group_by(Week, Population, Treatment) %>% 
+  summarize(Chlorophyll = mean(Chlorophyll, na.rm = TRUE))
+
+# box plot  
+# Ungroup the data for plot over time
+mean_functional_filled <- mean_functional %>%
+    ungroup()
+
+# boxplots!
+mean_functional_filled %>%
+  ggplot(aes(
+    x= Chlorophyll, 
+    y= Population, 
+    fill = Treatment)) + 
+  scale_fill_manual(values = c("C" = "darkgreen", "PD" = "brown")) + 
+  geom_boxplot(alpha = 0.5) + 
+  geom_jitter(alpha = 0.5) +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=12, hjust = 0.5), 
+      axis.title.x = element_text(size=10, hjust = 0.5),
+      axis.title.y = element_text(size=10, hjust = 0.5),
+      axis.text.x = element_text(size = 8), 
+      axis.text.y = element_text(size = 8))+
+   labs(
+     title = "Main Effect of Drought on Chlorophyll Content in ʻAʻaliʻi",
+     x = "Chlorophyll Content", 
+     y = "Population") + 
+  scale_y_discrete(labels = c(
+    "Saddle" = "Saddle Road", 
+    "Ohikilolo2" = "Lower ʻŌhikilolo B", 
+    "Ohikilolo1" = "Lower ʻŌhikilolo A", 
+    "Koko" = "Koko Head", 
+    "Keaau" = "Keaʻau Hibiscus", 
+    "Kahanahaiki" = "Kahanahāʻiki", 
+    "Ekahanui" = "ʻĒkahanui")) + 
+  facet_wrap(~Treatment)
+```
+
+
+# **Trait Plasticity in Seedling Responses**  
+
+```{r scatter}
+# animating a scatter plot
+# Chlorophyll content over time
+animated_chlplot <- mean_functional_filled  %>% # datasheet
+  ggplot(aes(x = Week, # x-axis
+             y = Chlorophyll, # y-axis
+             color = Treatment,
+             group = Treatment)) + # colors
+  geom_point(aes(group = seq_along(Week))) +
+  geom_line() +
+  labs(subtitle = "Population variation in chlorophyll content of ʻaʻaliʻi in response to drought stress over time", # plot subtitle
+       caption = "Data sourced from: Greene 2023", # plot caption
+       x = "Time (Weeks)", # x-axis label
+       y = "Mean Chlorophyll Content") + # y-axis label
+  facet_wrap(~Population) + # create panels for each population!
+  scale_color_manual(breaks= c("C", "PD"), labels = c("Control Group", "Pulse Drought Group"), values = c("darkgreen", "brown")) + # rename legend variables
+  theme(plot.title = element_text(face = "bold", color = "black", hjust = 0.5), # bold title
+        axis.text.x = element_text(size = 8), axis.title.x = element_text(size = 10), # adjust x-axis labels
+        axis.text.y = element_text(size = 8), axis.title.y = element_text(size = 10),   # adjust y-axis labels
+        legend.position = "top", 
+        plot.subtitle = element_text(size = 10, hjust = 0.5), 
+        legend.title = element_blank())+
+  transition_reveal(along = Week)+
+  labs(title = "Main Effect of Drought on Chlorphyll Content of ʻAʻaliʻi at Week: {round(frame_along)}") # Display the current Week in the title
+
+# Animate the plot
+animate(animated_chlplot, nframes = 50, fps = 10)
+```
+
