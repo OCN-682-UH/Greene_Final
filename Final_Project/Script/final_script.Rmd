@@ -78,7 +78,7 @@ Model System
 Oʻahu, served as our primary model system (with an additional population sourced from Saddle Road on Hawaiʻi Island). We had 9 populations sourced from a variety of sites that captured a 450-1325 mm mean annual rainfall precipitation gradient.
 :::
 
-```{r map, fig.align='center'}
+```{r map}
 
 # Map of population source sites  
 # coding below is formatted for the html document  
@@ -110,11 +110,11 @@ Population Source Sites of ʻAʻaliʻi
 map <- leaflet(data = site) %>% # dataset  
   addTiles() %>% # building map
   addProviderTiles("Esri.WorldImagery") %>% # visual map type  
-  addMarkers( # points for populations
+  addMarkers(# points for populations
     lng = -158.2092, # longitude  
     lat = 21.57249, # latitude  
     popup = "Kealia (921.1 mm)") %>% # label name popup  
-  addMarkers( # repeat for all sites listed below   
+  addMarkers(# repeat for all sites listed below   
     lng = -158.2219,
     lat = 21.51970, 
     popup = "Lower ʻŌhikilolo (889 mm)") %>% 
